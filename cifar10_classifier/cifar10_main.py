@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 # import matplotlib.pyplot as plt
 import numpy as np
 
-import cifar10_net as net
+import cifar10_net as Net
 
 import torch.optim as optim
 import torch.nn as nn
@@ -45,6 +45,8 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # # print labels
 # print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
 # plt.show()
+
+net = Net()
 
 #use the cross entropy loss as our loss function and SGD as our optimizer
 criterion = nn.CrossEntropyLoss()
