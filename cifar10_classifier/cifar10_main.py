@@ -5,11 +5,11 @@ import torchvision.transforms as transforms
 # import matplotlib.pyplot as plt
 import numpy as np
 
-import cifar10_net as Net
+from cifar10_net import Net
 
 import torch.optim as optim
 import torch.nn as nn
-
+from torch.autograd import Variable
 
 transform = transforms.Compose(
 	[transforms.ToTensor(), #convert rgb image to float [0.0, 1.0]
@@ -29,7 +29,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False, n
 #define the classes of the cifar10 dataset
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-# # functions to show an image
+# functions to show an image
 # def imshow(img):
 # 	img = img / 2 + 0.5     # unnormalize
 # 	npimg = img.numpy()
@@ -47,12 +47,13 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # plt.show()
 
 net = Net()
+net = net.cuda() #activate cuda for neural network
 
 #use the cross entropy loss as our loss function and SGD as our optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-num_iter = 2
+num_iter = 5
 
 for epoch in range(num_iter):
 	running_loss = 0.0
@@ -61,7 +62,7 @@ for epoch in range(num_iter):
 		inputs, labels = data
 
 		# wrap them in Variable
-		inputs, labels = Variable(inputs), Variable(labels)
+		inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda()) #send inputs and label to cuda too
 
 		# zero the parameter gradients
 		optimizer.zero_grad()
@@ -82,6 +83,35 @@ for epoch in range(num_iter):
 
 print('Finished Training')
 
+dataiter = iter(testloader)
+images, labels = dataiter.next()
+
+# print images
+# imshow(torchvision.utils.make_grid(images))
+print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
+# plt.show()
+
+outputs = net(Variable(images))
+_, predicted = torch.max(outputs.data, 1)
+
+print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
+
+class_correct = list(0. for i in range(10))
+class_total = list(0. for i in range(10))
+for data in testloader:
+	images, labels = data
+	outputs = net(Variable(images))
+	_, predicted = torch.max(outputs.data, 1)
+	c = (predicted == labels).squeeze()
+	for i in range(4):
+		label = labels[i]
+		class_correct[label] += c[i]
+		class_total[label] += 1
+
+
+for i in range(10):
+	print('Accuracy of %5s : %2d %%' % (
+		classes[i], 100 * class_correct[i] / class_total[i]))
 
 
 
