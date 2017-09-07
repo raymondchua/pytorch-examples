@@ -12,7 +12,7 @@ class Net(nn.Module):
 		self.fc2 = nn.Linear(120, 84) #applies linear transformation such at y=Ax+b, 120 input channels, 84 output channels
 		self.fc3 = nn.Linear(84, 10) #applies linear transformation such at y=Ax+b, 84 input channels, 10 output channels
 
-    def forward(self, x):
+	def forward(self, x):
 		x = self.pool(F.relu(self.conv1(x))) #2d conv -> relu -> max pooling
 		x = self.pool(F.relu(self.conv2(x))) #2d conv -> relu -> max pooling
 		x = x.view(-1, 16 * 5 * 5) #returns same data but different size, looks like tf.reshape
