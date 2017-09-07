@@ -8,6 +8,7 @@ import numpy as np
 import cifar10_net as net
 
 import torch.optim as optim
+import torch.nn as nn
 
 
 transform = transforms.Compose(
