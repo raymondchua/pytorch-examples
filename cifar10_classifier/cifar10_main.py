@@ -91,7 +91,7 @@ images, labels = dataiter.next()
 print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
 # plt.show()
 
-outputs = net(Variable(images))
+outputs = net(Variable(images.cuda()))
 _, predicted = torch.max(outputs.data, 1)
 
 print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
@@ -100,7 +100,7 @@ class_correct = list(0. for i in range(10))
 class_total = list(0. for i in range(10))
 for data in testloader:
 	images, labels = data
-	outputs = net(Variable(images))
+	outputs = net(Variable(images.cuda()))
 	_, predicted = torch.max(outputs.data, 1)
 	c = (predicted == labels).squeeze()
 	for i in range(4):
